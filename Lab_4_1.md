@@ -65,9 +65,7 @@
   (lambda (result element)
     (let ((current (funcall transform element)))
       (if (null result)
-          ;; Якщо це перший елемент
           (list (cons current nil))
-          ;; Якщо це не перший елемент
           (let* ((last-pair (car (last result)))
                  (updated-last (cons (car last-pair) current))
                  (new-pair (cons current nil)))
