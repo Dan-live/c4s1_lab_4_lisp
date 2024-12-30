@@ -6,8 +6,8 @@
     (loop for element in sorted-list
           with result = '()
           until (funcall test-fn value-key (funcall key-fn element))
-          do (setf result (append result (list element)))
-          finally (return (append result (list value) (remove-if-not #'identity sorted-list :start (length result)))))))
+          do (push element result)
+          finally (return (nconc (reverse result) (list value) (remove-if (lambda (x) (member x (reverse result))) sorted-list))))))
 
 
 (defun insertion-sort-functional (unsorted-list &key key test)
