@@ -32,6 +32,7 @@
        (let ((rest (insert-right-to-left value (cdr sorted-list) :key key :test test)))
          (cons (car sorted-list) rest))))))
 
+
 (defun insertion-sort-functional (unsorted-list &key key test)
  (let ((key-fn (or key #'identity))
         (test-fn (or test #'<)))
@@ -61,20 +62,21 @@
 2. Написати функцію add-next-reducer , яка має один ключовий параметр — функцію transform . add-next-reducer має повернути функцію, яка при застосуванні в якості першого аргументу reduce робить наступне: кожен елемент списку-аргументу reduce перетворюється на точкову пару, де в комірці CAR знаходиться значення поточного елемента, а в комірці CDR знаходиться значення наступного елемента списку (тобто того, що знаходиться "справа"). Якщо функція transform передана, тоді значення поточного і наступного елементів, що потраплять у результат, мають бути змінені згідно transform . Обмеження, які накладаються на використання функції-результату addnext-reducer при передачі у reduce визначаються розробником (тобто, наприклад, необхідно чітко визначити, якими мають бути значення ключових параметрів функції reduce from-end та initial-value ). transform має виконатись мінімальну кількість разів.
 
 ```lisp
-(defun add-next-reducer (&key transform)
-  (let ((previous nil))
-    (lambda (result element)
-      (let ((current (if transform (funcall transform element) element)))
-        (if previous
-            (setf result (append result (list (cons previous current)))))
-        (setf previous current))
-      result)))
 
-(defun add-last-pair (result previous transform)
-  (if previous
-      (let ((current (if transform (funcall transform previous) previous)))
-        (append result (list (cons current nil))))
-    result))
+(defun add-next-reducer (&key (transform #'identity))
+  (lambda (result element)
+    (let ((current (funcall transform element)))
+      (if (null result)
+          ;; Якщо це перший елемент
+          (list (cons current nil))
+          ;; Якщо це не перший елемент
+          (let* ((last-pair (car (last result)))
+                 (updated-last (cons (car last-pair) current))
+                 (new-pair (cons current nil)))
+            (append (butlast result)
+                    (list updated-last new-pair)))))))
+
+
 
 ```
 
